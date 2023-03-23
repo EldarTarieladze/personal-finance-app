@@ -1,0 +1,614 @@
+{
+	"info": {
+		"_postman_id": "76c118c2-23ef-4d6d-a841-4ff50b0325b2",
+		"name": "Personal financial app",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);\r",
+									"postman.setEnvironmentVariable(\"accessToken\", jsonData.accessToken);\r",
+									"\r",
+									"var jsonData = JSON.parse(responseBody);\r",
+									"postman.setEnvironmentVariable(\"refreshToken\", jsonData.refreshToken);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"{{email}}\",\r\n    \"password\": \"{{password}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}api/sessions",
+							"host": [
+								"{{host}}api"
+							],
+							"path": [
+								"sessions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Refresh Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);\r",
+									"postman.setEnvironmentVariable(\"accessToken\", jsonData.accessToken);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-refresh",
+								"value": "{{refreshToken}}",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{host}}api/sessions/refresh",
+							"host": [
+								"{{host}}api"
+							],
+							"path": [
+								"sessions",
+								"refresh"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "bearer"
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "Register user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// set up variables\r",
+									"\r",
+									"let statusCode = pm.response.code\r",
+									"var requestData = JSON.parse(pm.request.body);\r",
+									"if(statusCode === 200){\r",
+									"    postman.setEnvironmentVariable(\"email\", requestData.email);\r",
+									"    postman.setEnvironmentVariable(\"firstName\", requestData.firstName);\r",
+									"    postman.setEnvironmentVariable(\"lastName\", requestData.lastName);\r",
+									"    postman.setEnvironmentVariable(\"password\", requestData.password);\r",
+									"}\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstName\": \"{{$randomFirstName}}\",\r\n    \"lastName\": \"{{$randomLastName}}\",\r\n    \"password\": \"{{password}}\",\r\n    \"passwordConfirmation\": \"{{password}}\",\r\n    \"email\": \"{{$randomEmail}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}api/users",
+							"host": [
+								"{{host}}api"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Request reset password",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDFiNzBkZmIxYzIxNmMxN2U4YWFjNjMiLCJlbWFpbCI6InRhcmllbGFkemU5OEBnbWFpbC5jb20iLCJmaXJzdE5hbWUiOiJKb2huIiwibGFzdE5hbWUiOiJXaWNrIiwiY3JlYXRlZEF0IjoiMjAyMy0wMy0yMlQyMToxOToyNy40NThaIiwidXBkYXRlZEF0IjoiMjAyMy0wMy0yMlQyMToxOToyNy40NThaIiwiX192IjowLCJpYXQiOjE2Nzk1MjA0MzYsImV4cCI6MTY3OTUyMTMzNn0.UEurEMhm7VxDJrwLWhJR-atF4LJxOZ3HqtZyEo9f_EklMVvmOPTIn0tBaadj1VVIgNydaIeufVQzNvFNhSMPWdGjd3M6k551nAh0aMs8fPi26ErHNu7n81xbK965xcoF07SDh4avTjeV9YnrqQHKQJiGPVRaU_pc2NWV9XQPqwSAW-ctknC197nkrXgNQzDITC9o7ZdaOwJVDZ3IZg29n8RM0aKt-mKeTvD0RnCwIys9wI8UCHiW9raWlE53RhBnrVDWbPTzfOkrIP8JqzB_Y3-jcQw4TdHQ-4NGNXb_CzyQDgCepf-nJV9KX0Q2M1irRUtcMuuESztPgDcR8mVfaA",
+								"type": "default",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"{{email}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}api/users/forgotpassword",
+							"host": [
+								"{{host}}api"
+							],
+							"path": [
+								"users",
+								"forgotpassword"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reset password",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let statusCode = pm.response.code\r",
+									"var requestData = JSON.parse(pm.request.body);\r",
+									"if(statusCode === 200){\r",
+									"    postman.setEnvironmentVariable(\"password\", requestData.password);\r",
+									"}\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"password\": \"{{newPassword}}\",\r\n    \"passwordConfirmation\": \"{{newPassword}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}api/users/resetpassword/:id/:passwordResetCode",
+							"host": [
+								"{{host}}api"
+							],
+							"path": [
+								"users",
+								"resetpassword",
+								":id",
+								":passwordResetCode"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "641bf34463005689d5dfdcf9"
+								},
+								{
+									"key": "passwordResetCode",
+									"value": "8TCaiL7wMn8wp8J0NjpXG"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Me",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}api/users/me",
+							"host": [
+								"{{host}}api"
+							],
+							"path": [
+								"users",
+								"me"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Category",
+			"item": [
+				{
+					"name": "Get Categories",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}api/category",
+							"host": [
+								"{{host}}api"
+							],
+							"path": [
+								"category"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Category",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"categoryName\": \"{{$randomWord}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}api/category",
+							"host": [
+								"{{host}}api"
+							],
+							"path": [
+								"category"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Category",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"categoryName\": \"{{$randomWord}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}api/category/:categoryId",
+							"host": [
+								"{{host}}api"
+							],
+							"path": [
+								"category",
+								":categoryId"
+							],
+							"variable": [
+								{
+									"key": "categoryId",
+									"value": "641bf81acb643f8cf97f7ae5"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Category",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{host}}api/category/:categoryId",
+							"host": [
+								"{{host}}api"
+							],
+							"path": [
+								"category",
+								":categoryId"
+							],
+							"variable": [
+								{
+									"key": "categoryId",
+									"value": "641bf47863005689d5dfdd20",
+									"description": "categoryId"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get category",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}api/category/:categoryId",
+							"host": [
+								"{{host}}api"
+							],
+							"path": [
+								"category",
+								":categoryId"
+							],
+							"variable": [
+								{
+									"key": "categoryId",
+									"value": "641bf81acb643f8cf97f7ae5"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{accessToken}}",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Record",
+			"item": [
+				{
+					"name": "Get Records",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}api/records",
+							"host": [
+								"{{host}}api"
+							],
+							"path": [
+								"records"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Record",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"type\": \"{{expense}}\",\r\n    \"status\": \"{{completed}}\",\r\n    \"descripion\": \"{{$randomJobDescriptor}}\",\r\n    \"amount\": {{$randomInt}},\r\n    \"categoryId\": [\r\n        \"641bf81acb643f8cf97f7ae5\"\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}api/records",
+							"host": [
+								"{{host}}api"
+							],
+							"path": [
+								"records"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Filter records",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}api/records?dateFrom=2023-03-10&dateTo=2023-03-25&type=expense&status=completed&amountFrom=100&amountTo=600",
+							"host": [
+								"{{host}}api"
+							],
+							"path": [
+								"records"
+							],
+							"query": [
+								{
+									"key": "dateFrom",
+									"value": "2023-03-10",
+									"description": "YYYY-MM-DD"
+								},
+								{
+									"key": "dateTo",
+									"value": "2023-03-25",
+									"description": "YYYY-MM-DD"
+								},
+								{
+									"key": "type",
+									"value": "expense",
+									"description": "enum = [\"expense\", \"income\"]"
+								},
+								{
+									"key": "status",
+									"value": "completed",
+									"description": "enum = [\"proccessing\", \"completed\"]"
+								},
+								{
+									"key": "amountFrom",
+									"value": "100",
+									"description": "0<"
+								},
+								{
+									"key": "amountTo",
+									"value": "600"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Healthcheck",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}healthcheck",
+					"host": [
+						"{{host}}healthcheck"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{accessToken}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
